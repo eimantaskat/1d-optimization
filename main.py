@@ -53,33 +53,29 @@ def create_plot(function: FunctionWrapper, l: float, r: float, num_points=100, t
 
 
 if __name__ == '__main__':
-    function = FunctionWrapper(function="(x**2 - 5)**2")
+    function = FunctionWrapper(function="((x**2 - 5)**2)/2-1")
     l = 0
     r = 10
     x0 = 5
     eps = 1e-4
 
-    x_min = bisection(function, l=l, r=r, eps=eps)
-    print(f"Minimum of f(x) using the bisection method: x = {x_min:.4f}")
-    print(
-        f"Number of times f(x) was called: {function.function.times_called}\n")
-    create_plot(function, l, r, title="Bisection method")
-    function.function.clear()
+    for method in [bisection, golden_section]:
+        method_name = method.__name__.capitalize().replace("_", " ")
+        print(f"{method_name} method:")
+        x_min, iterations = method(function, l=l, r=r, eps=eps)
+        print(f"Iterations: {iterations}")
+        print(f"Times f(x) was called: {function.function.times_called}")
+        print(f"Minimum of f(x): x = {x_min}")
+        print(f"f(x_min): {function.at(x_min)}\n")
+        create_plot(function, l, r, title=f"{method_name} method")
+        function.function.clear()
 
-    x_min = golden_section(function, l=l, r=r, eps=eps)
-    print(
-        f"Minimum of f(x) using the golden section search method: x = {x_min:.4f}")
-    print(
-        f"Number of times f(x) was called: {function.function.times_called}\n")
-    create_plot(function, l, r, title="Golden section search method")
-    function.function.clear()
-
-    x_min = newton(function, x0=x0, eps=eps)
-    print(f"Minimum of f(x) using Newton's method: x = {x_min:.4f}")
-    print(f"Number of times f(x) was called: {function.function.times_called}")
-    print(
-        f"Number of times f'(x) was called: {function.first_dx.times_called}")
-    print(
-        f"Number of times f''(x) was called: {function.second_dx.times_called}")
+    print("Newton's method:")
+    x_min, iterations = newton(function, x0=x0, eps=eps)
+    print(f"Iterations: {iterations}")
+    print(f"Times f(x) was called: {function.function.times_called}")
+    print(f"Times f'(x) was called: {function.first_dx.times_called}")
+    print(f"Times f''(x) was called: {function.second_dx.times_called}")
+    print(f"Minimum of f(x): x = {x_min}")
+    print(f"f(x_min): {function.at(x_min)}")
     create_plot(function, l, r, title="Newton's method")
-    function.function.clear()
