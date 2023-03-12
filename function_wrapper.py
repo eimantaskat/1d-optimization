@@ -29,23 +29,20 @@ class Function(dict):
 class FunctionWrapper():
     def __init__(self, *args, **kwargs):
         function = kwargs.get('function', None)
-        first_dx = sp.diff(function, sp.symbols('x'))
-        second_dx = sp.diff(function, sp.symbols('x'), 2)
+        self._derivatives = {}
+        # first_dx = sp.diff(function, sp.symbols('x'))
+        # second_dx = sp.diff(function, sp.symbols('x'), 2)
         self._function = Function(f=function)
-        self._first_dx = Function(f=first_dx)
-        self._second_dx = Function(f=second_dx)
+        # self._first_dx = Function(f=first_dx)
+        # self._second_dx = Function(f=second_dx)
 
     @property
     def function(self):
         return self._function
-
+    
     @property
-    def first_dx(self):
-        return self._first_dx
-
-    @property
-    def second_dx(self):
-        return self._second_dx
+    def derivatives(self):
+        return self._derivatives
 
     def at(self, x: float | list[float]):
         """
@@ -58,24 +55,14 @@ class FunctionWrapper():
         else:
             return [self._function[i] for i in x]
 
-    def d1_at(self, x: float | list[float]):
+    def dx_at(self, x: float | list[float], order: int = 1):
         """
-        Computes the first derivative of the function at a point x.
+        Computes the value of the n-th derivative of the function at a point x.
         """
-        if not self._first_dx.f:
-            raise ValueError("No function defined")
+        if not self._derivatives.get(order):
+            self._derivatives[order] = Function(
+                f=sp.diff(self._function.f, sp.symbols('x'), order))
         if isinstance(x, (int, float, Rational)):
-            return self._first_dx[x]
+            return self._derivatives[order][x]
         else:
-            return [self._first_dx[i] for i in x]
-
-    def d2_at(self, x: float | list[float]):
-        """
-        Computes the second derivative of the function at a point x.
-        """
-        if not self._second_dx.f:
-            raise ValueError("No function defined")
-        if isinstance(x, (int, float, Rational)):
-            return self._second_dx[x]
-        else:
-            return [self._second_dx[i] for i in x]
+            return [self._derivatives[order][i] for i in x]
