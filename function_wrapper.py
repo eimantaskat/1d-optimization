@@ -30,11 +30,7 @@ class FunctionWrapper():
     def __init__(self, *args, **kwargs):
         function = kwargs.get('function', None)
         self._derivatives = {}
-        # first_dx = sp.diff(function, sp.symbols('x'))
-        # second_dx = sp.diff(function, sp.symbols('x'), 2)
         self._function = Function(f=function)
-        # self._first_dx = Function(f=first_dx)
-        # self._second_dx = Function(f=second_dx)
 
     @property
     def function(self):

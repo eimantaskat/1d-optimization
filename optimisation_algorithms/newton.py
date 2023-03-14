@@ -14,4 +14,4 @@ def newton(f: FunctionWrapper, x0: float, eps=1e-6) -> tuple[float, int]:
         if abs(xi1 - xi) < eps:
             break
         xi = xi1
-    return float(xi), iterations
+    return float(xi1), iterations
